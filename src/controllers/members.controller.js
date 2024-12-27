@@ -1,8 +1,12 @@
 import {pool} from '../db.js'
 
 export const getMembers = async (req, res) => {
-    const [result] = await pool.query('SELECT * FROM Member;')
-    res.json(result)
+    try {
+        const [result] = await pool.query('SELECT * FROM Member;')
+        res.json(result)
+    } catch (error) {
+        return res.sendStatus(500).json({message: "Something went wrong"})
+    }
 }
 
 export const getMember = async (req, res) => {
