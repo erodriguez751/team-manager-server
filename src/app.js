@@ -5,6 +5,7 @@ import eventsRoutes from './routes/events.routes.js'
 import paymentsRoutes from './routes/payments.routes.js'
 import teamMembersRoutes from './routes/team_members.routes.js'
 import teamEventsRoutes from './routes/team_events.routes.js'
+import teamPaymentsRoutes from './routes/team_payments.routes.js'
 
 const app = express()
 
@@ -15,6 +16,7 @@ app.use(eventsRoutes)
 app.use(paymentsRoutes)
 app.use(teamMembersRoutes)
 app.use(teamEventsRoutes)
+app.use(teamPaymentsRoutes)
 
 app.use((req, res, next) => {
     res.status(404).json({
