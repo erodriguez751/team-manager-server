@@ -3,7 +3,6 @@ import {pool} from '../db.js'
 export const getTeamEventMembers = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Event_Member;')
-        console.log(result)
         const [teamEventRows] = await pool.query('SELECT * FROM Team_Event WHERE id = ?;', [result[0].team_event_id])
         const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamEventRows[0].team_id])
         const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [teamEventRows[0].event_id])

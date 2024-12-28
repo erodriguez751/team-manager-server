@@ -27,8 +27,6 @@ export const createTeamMember = async (req, res) => {
             [isAdmin, memberType, teamId, memberId])
         const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamId])
         const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [memberId])
-        console.log(teamRows)
-        console.log(memberRows)
         res.send({
             id: rows.insertId,
             isAdmin: isAdmin,

@@ -27,8 +27,6 @@ export const createTeamPayment = async (req, res) => {
             [isAdmin, paymentType, teamId, paymentId])
         const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamId])
         const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [paymentId])
-        console.log(teamRows)
-        console.log(paymentRows)
         res.send({
             id: rows.insertId,
             teamId: teamId,

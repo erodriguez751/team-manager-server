@@ -27,8 +27,6 @@ export const createTeamEvent = async (req, res) => {
             [status, teamId, eventId])
         const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamId])
         const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [eventId])
-        console.log(teamRows)
-        console.log(eventRows)
         res.send({
             id: rows.insertId,
             status: status,
