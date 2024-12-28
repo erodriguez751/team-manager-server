@@ -3,7 +3,20 @@ import {pool} from '../db.js'
 export const getTeamPayments = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Payment;')
-        res.json(result)
+        var fullResults = []
+        for (var i = 0; i < result.length; i++) {
+            const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [result[i].team_id])
+            const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [result[i].payment_id])
+            const fullResult = {
+                id: result[i].id,
+                teamName: teamRows[0].name,
+                paymentComment: paymentRows[0].comment,
+                paymentAmount: paymentRows[0].amount,
+                paymentDate: paymentRows[0].date
+            }
+            fullResults.push(fullResult)
+        }
+        res.json(fullResults)
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -13,7 +26,15 @@ export const getTeamPayment = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Payment WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "TeamPayment with " + req.params.id + " not found"})
-        res.json(result)
+        const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [result[0].team_id])
+        const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [result[0].payment_id])
+        res.json({
+            id: result[0].id,
+            teamName: teamRows[0].name,
+            paymentComment: paymentRows[0].comment,
+            paymentAmount: paymentRows[0].amount,
+            paymentDate: paymentRows[0].date
+        })
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

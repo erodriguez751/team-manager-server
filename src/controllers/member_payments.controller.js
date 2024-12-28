@@ -3,7 +3,19 @@ import {pool} from '../db.js'
 export const getMemberPayments = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Member_Payment;')
-        res.json(result)
+        var fullResults = []
+        for (var i = 0; i < result.length; i++) {
+            const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [result[i].member_id])
+            const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [result[i].payment_id])
+            const fullResult = {
+                id: result[i].id,
+                memberName: memberRows[0].name,
+                paymentComment: paymentRows[0].comment,
+                paymentAmount: paymentRows[0].amount
+            }
+            fullResults.push(fullResult)
+        }
+        res.json(fullResults)
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -13,7 +25,14 @@ export const getMemberPayment = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Member_Payment WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "MemberPayment with " + req.params.id + " not found"})
-        res.json(result)
+        const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [result[0].member_id])
+        const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [result[0].payment_id])
+        res.json({
+            id: result[0].id,
+            memberName: memberRows[0].name,
+            paymentComment: paymentRows[0].comment,
+            paymentAmount: paymentRows[0].amount
+        })
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -46,7 +65,7 @@ export const updateMemberPayment = async (req, res) => { 
             [memberId, paymentId, id])
         if (result.affectedRows === 0) return res.status(404).json({message: "Member Payment with " + id + " not found"})
         const [rows] = await pool.query('SELECT * FROM Member_Payment WHERE id = ?;', [id])
-        res.send({rows})
+        res.send(rows[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

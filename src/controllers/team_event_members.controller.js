@@ -3,6 +3,31 @@ import {pool} from '../db.js'
 export const getTeamEventMembers = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Event_Member;')
+        var fullResults = []
+        for (var i = 0; i < result.length; i++) {
+            const [teamEventRows] = await pool.query('SELECT * FROM Team_Event WHERE id = ?;', [result[i].team_event_id])
+            const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamEventRows[0].team_id])
+            const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [teamEventRows[0].event_id])
+            const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [result[i].member_id])
+            const fullResult = {
+                id: result[i].id,
+                status: result[i].status,
+                teamName: teamRows[0].name,
+                eventName: eventRows[0].name,
+                memberName: memberRows[0].name
+            }
+            fullResults.push(fullResult)
+        }
+        res.json(fullResults)
+    } catch (error) {
+        return res.sendStatus(500).json({message: "Something went wrong"})
+    }
+}
+
+export const getTeamEventMember = async (req, res) => {
+    try {
+        const [result] = await pool.query('SELECT * FROM Team_Event_Member WHERE id = ?;', [req.params.id])
+        if (result.length <= 0) return res.status(404).json({message: "Team Event Member with " + req.params.id + " not found"})
         const [teamEventRows] = await pool.query('SELECT * FROM Team_Event WHERE id = ?;', [result[0].team_event_id])
         const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamEventRows[0].team_id])
         const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [teamEventRows[0].event_id])
@@ -14,16 +39,6 @@ export const getTeamEventMembers = async (req, res) => {
             eventName: eventRows[0].name,
             memberName: memberRows[0].name
         })
-    } catch (error) {
-        return res.sendStatus(500).json({message: "Something went wrong"})
-    }
-}
-
-export const getTeamEventMember = async (req, res) => {
-    try {
-        const [result] = await pool.query('SELECT * FROM Team_Event_Member WHERE id = ?;', [req.params.id])
-        if (result.length <= 0) return res.status(404).json({message: "Team Event Member with " + req.params.id + " not found"})
-        res.json(result)
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

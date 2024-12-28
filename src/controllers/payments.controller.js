@@ -23,7 +23,7 @@ export const createPayment = async (req, res) => {
     try {
         const {comment, date, amount} = req.body
         const [rows] = await pool.query('INSERT INTO Payment (comment, date, amount) VALUES (?, ?, ?);', 
-            [comment, date])
+            [comment, date, amount])
         res.send({
             id: rows.insertId,
             comment: comment,
@@ -43,7 +43,7 @@ export const updatePayment = async (req, res) => { 
             [comment, date, amount, id])
         if (result.affectedRows === 0) return res.status(404).json({message: "Payment with " + id + " not found"})
         const [rows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [id])
-        res.send({rows})
+        res.send(rows[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

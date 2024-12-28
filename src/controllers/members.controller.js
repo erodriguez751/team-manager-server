@@ -13,7 +13,7 @@ export const getMember = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Member WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "Member with " + req.params.id + " not found"})
-        res.json(result)
+        res.json(result[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -43,7 +43,7 @@ export const updateMember = async (req, res) => { 
             [name, nickName, email, id])
         if (result.affectedRows === 0) return res.status(404).json({message: "Member with " + id + " not found"})
         const [rows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [id])
-        res.send({rows})
+        res.send(rows[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

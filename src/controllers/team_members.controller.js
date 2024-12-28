@@ -3,7 +3,20 @@ import {pool} from '../db.js'
 export const getTeamMembers = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Member;')
-        res.json(result)
+        var fullResults = []
+        for (var i = 0; i < result.length; i++) {
+            const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [result[i].team_id])
+            const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [result[i].member_id])
+            const fullResult = {
+                id: result[i].id,
+                teamName: teamRows[0].name,
+                memberName: memberRows[0].name,
+                isAdmin: Boolean(result[i].is_admin),
+                memberType: result[i].member_type
+            }
+            fullResults.push(fullResult)
+        }
+        res.json(fullResults)
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -13,7 +26,15 @@ export const getTeamMember = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Member WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "TeamMember with " + req.params.id + " not found"})
-        res.json(result)
+        const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [result[0].team_id])
+        const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [result[0].member_id])
+        res.json({
+            id: result[0].id,
+            teamName: teamRows[0].name,
+            memberName: memberRows[0].name,
+            isAdmin: Boolean(result[0].is_admin),
+            memberType: result[0].member_type
+        })
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

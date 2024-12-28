@@ -13,7 +13,7 @@ export const getEvent = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Event WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "Event with " + req.params.id + " not found"})
-        res.json(result)
+        res.json(result[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -47,7 +47,7 @@ export const updateEvent = async (req, res) => { 
             [name, dateScheduled, dateCreated, cost, type, id])
         if (result.affectedRows === 0) return res.status(404).json({message: "Event with " + id + " not found"})
         const [rows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [id])
-        res.send({rows})
+        res.send(rows[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

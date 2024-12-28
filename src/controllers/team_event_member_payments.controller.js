@@ -5,21 +5,26 @@ export const getTeamEventMemberPayments = async (req, res) => {
         const [result] = await pool.query('SELECT * FROM Team_Event_Member_Payment;')
         console.log(result)
         if (result.length > 0) {
-            const [teamEventRows] = await pool.query('SELECT * FROM Team_Event WHERE id = ?;', [result[0].team_event_id])
-            const [memberPaymentRows] = await pool.query('SELECT * FROM Member_Payment WHERE id = ?;', [result[0].member_payment_id])
-            const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamEventRows[0].team_id])
-            const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [teamEventRows[0].event_id])
-            const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [memberPaymentRows[0].member_id])
-            const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [memberPaymentRows[0].payment_id])
-            res.json({
-                id: result[0].id,
-                teamName: teamRows[0].name,
-                eventName: eventRows[0].name,
-                memberName: memberRows[0].name,
-                paymentComment: paymentRows[0].comment,
-                paymentAmount: paymentRows[0].amount,
-                paymentDate: paymentRows[0].date
-            })
+            var fullResults = []
+            for (var i = 0; i < result.length; i++) {
+                const [teamEventRows] = await pool.query('SELECT * FROM Team_Event WHERE id = ?;', [result[i].team_event_id])
+                const [memberPaymentRows] = await pool.query('SELECT * FROM Member_Payment WHERE id = ?;', [result[i].member_payment_id])
+                const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamEventRows[i].team_id])
+                const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [teamEventRows[i].event_id])
+                const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [memberPaymentRows[i].member_id])
+                const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [memberPaymentRows[i].payment_id])
+                const fullResult = {
+                    id: result[i].id,
+                    teamName: teamRows[0].name,
+                    eventName: eventRows[0].name,
+                    memberName: memberRows[0].name,
+                    paymentComment: paymentRows[0].comment,
+                    paymentAmount: paymentRows[0].amount,
+                    paymentDate: paymentRows[0].date
+                }
+                fullResults.push(fullResult)
+            }
+            res.json(fullResults)
         } else {
             res.json(result)
         }
@@ -32,7 +37,21 @@ export const getTeamEventMemberPayment = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team_Event_Member_Payment WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "Team Event Member with " + req.params.id + " not found"})
-        res.json(result)
+        const [teamEventRows] = await pool.query('SELECT * FROM Team_Event WHERE id = ?;', [result[0].team_event_id])
+        const [memberPaymentRows] = await pool.query('SELECT * FROM Member_Payment WHERE id = ?;', [result[0].member_payment_id])
+        const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamEventRows[0].team_id])
+        const [eventRows] = await pool.query('SELECT * FROM Event WHERE id = ?;', [teamEventRows[0].event_id])
+        const [memberRows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [memberPaymentRows[0].member_id])
+        const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [memberPaymentRows[0].payment_id])
+        res.json({
+            id: result[0].id,
+            teamName: teamRows[0].name,
+            eventName: eventRows[0].name,
+            memberName: memberRows[0].name,
+            paymentComment: paymentRows[0].comment,
+            paymentAmount: paymentRows[0].amount,
+            paymentDate: paymentRows[0].date
+        })
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
