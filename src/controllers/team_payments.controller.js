@@ -24,7 +24,7 @@ export const createTeamPayment = async (req, res) => {
         const {teamId, paymentId} = req.body
         const [rows] = await pool.query('INSERT INTO Team_Payment (team_id, payment_id)' +
             ' VALUES (?, ?);', 
-            [isAdmin, paymentType, teamId, paymentId])
+            [teamId, paymentId])
         const [teamRows] = await pool.query('SELECT * FROM Team WHERE id = ?;', [teamId])
         const [paymentRows] = await pool.query('SELECT * FROM Payment WHERE id = ?;', [paymentId])
         res.send({
@@ -43,7 +43,7 @@ export const updateTeamPayment = async (req, res) => { 
         const {id} = req.params
         const {teamId, paymentId} = req.body
         const [result] = await pool.query('UPDATE Team_Payment SET team_id = IFNULL(?, team_id), payment_id = IFNULL(?, payment_id) WHERE id = ?;', 
-            [isAdmin, paymentType, teamId, paymentId, id])
+            [teamId, paymentId, id])
         if (result.affectedRows === 0) return res.status(404).json({message: "Team Payment with " + id + " not found"})
         const [rows] = await pool.query('SELECT * FROM Team_Payment WHERE id = ?;', [id])
         res.send({rows})
