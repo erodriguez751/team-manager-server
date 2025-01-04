@@ -19,6 +19,10 @@ export const getMember = async (req, res) => {
     }
 }
 
+export const createMemberRender = (req, res) => {
+    res.render('members/create')
+}
+
 export const createMember = async (req, res) => {
     try {
         const {name, nickName, email} = req.body

@@ -13,7 +13,7 @@ export const getTeam = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Team WHERE id = ?;', [req.params.id])
         if (result.length <= 0) return res.status(404).json({message: "Team with " + req.params.id + " not found"})
-        res.json(result)
+        res.json(result[0])
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
