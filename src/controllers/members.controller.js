@@ -3,7 +3,8 @@ import {pool} from '../db.js'
 export const getMembers = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Member;')
-        res.json(result)
+        //res.json(result)
+        res.render('members/list', {members: result})
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

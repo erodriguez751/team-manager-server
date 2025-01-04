@@ -1,0 +1,23 @@
+<div class="container p-4">
+     <div class="row">
+         {{#each members}}
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h3 class="card-title text-uppercase">
+                            {{name}}
+                        </h3>
+                        <p class="m-2">
+                            {{nick_name}}
+                        </p>
+                        <p class="m-2">
+                            {{email}}
+                        </p>
+                        <a href="" class="btn btn-danger">Borrar</a>
+                        <a href="" class="btn btn-secondary">Editar</a>
+                    </div>
+                </div>
+            </div>
+         {{/each}}
+     </div>
+</div>
