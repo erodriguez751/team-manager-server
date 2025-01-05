@@ -4,7 +4,7 @@ export const getMembers = async (req, res) => {
     try {
         const [result] = await pool.query('SELECT * FROM Member;')
         //res.json(result)
-        res.render('members/list', {members: result})
+        res.render('members/list', { members: result })
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -29,16 +29,17 @@ export const createMember = async (req, res) => {
         const {name, nickName, email} = req.body
         const [rows] = await pool.query('INSERT INTO Member (name, nick_name, email) VALUES (?, ?, ?);', 
             [name, nickName, email])
-        res.send({
-            id: rows.insertId,
-            name: name,
-            nickName: nickName,
-            email: email
-        })
+        res.redirect('/members')
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
 }
+
+export const updateMemberRender = async (req, res) => {
+    const [result] = await pool.query('SELECT * FROM Member WHERE id = ?;', [req.params.id])
+    res.render('members/update', {member: result[0]})
+}
+
 export const updateMember = async (req, res) => { 
     try {
         const {id} = req.params
@@ -48,7 +49,7 @@ export const updateMember = async (req, res) => { 
             [name, nickName, email, id])
         if (result.affectedRows === 0) return res.status(404).json({message: "Member with " + id + " not found"})
         const [rows] = await pool.query('SELECT * FROM Member WHERE id = ?;', [id])
-        res.send(rows[0])
+        res.redirect('/members')
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }
@@ -57,7 +58,8 @@ export const deleteMember = async (req, res) => {
     try {
         const [result] = await pool.query('DELETE FROM Member WHERE id = ?;', [req.params.id])
         if (result.affectedRows <= 0) return res.status(404).json({message: "Member with " + req.params.id + " not found"})
-        res.sendStatus(204)
+        const [getResult] = await pool.query('SELECT * FROM Member;')
+        res.redirect('/members')
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
     }

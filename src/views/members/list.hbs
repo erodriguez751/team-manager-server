@@ -13,9 +13,16 @@
                         <p class="m-2">
                             {{email}}
                         </p>
-                        <a href="" class="btn btn-danger">Borrar</a>
-                        <a href="" class="btn btn-secondary">Editar</a>
+                        <a href="/deleteMember/{{id}}" data-confirm="Are you sure?" data-method="delete" class="btn btn-danger">Borrar</a>
+                        <a href="/updateMember/{{id}}" class="btn btn-secondary">Editar</a>
                     </div>
+                </div>
+            </div>
+         {{else}}
+            <div class="col md-4 mx-auto">
+                <div class="card card-body text-center">
+                    <p>Aun no hay Miembros creados</p>
+                    <a href="/members/create">Crear Miembros</a>
                 </div>
             </div>
          {{/each}}
