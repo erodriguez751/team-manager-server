@@ -29,6 +29,7 @@ export const createMember = async (req, res) => {
         const {name, nickName, email} = req.body
         const [rows] = await pool.query('INSERT INTO Member (name, nick_name, email) VALUES (?, ?, ?);', 
             [name, nickName, email])
+        req.flash('success', 'Usuario guardado satisfactoriamente')
         res.redirect('/members')
     } catch (error) {
         return res.sendStatus(500).json({message: "Something went wrong"})
