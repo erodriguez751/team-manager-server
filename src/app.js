@@ -27,11 +27,11 @@ const MySQLStore = require('express-mysql-session')(session);
 const app = express()
 
 const options = {
-	host: 'localhost',
-	port: 3306,
-    user: 'root',
+	host: process.env.DB_HOST,
+	port: process.env.DB_PORT,
+    user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: 'TEAM_MANAGER_DB'
+    database: process.env.DB_DATABASE
 };
 
 const sessionStore = new MySQLStore(options);
