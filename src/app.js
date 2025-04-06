@@ -14,6 +14,7 @@ import login from './routes/authentication.routes.js'
 import { createRequire } from "module";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import "./lib/passport.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -24,7 +25,6 @@ const flash = require('connect-flash')
 const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session);
 const app = express()
-require('./lib/passport');
 
 const options = {
 	host: 'localhost',
