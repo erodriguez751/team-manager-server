@@ -19,10 +19,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
 const path = require('path')
+const passport = require('passport');
 const flash = require('connect-flash')
 const session = require('express-session')
 const MySQLStore = require('express-mysql-session')(session);
 const app = express()
+require('./lib/passport');
 
 const options = {
 	host: 'localhost',
@@ -53,7 +55,9 @@ app.use(session({
     store: sessionStore
 }))
 
-app.use(flash()) 
+app.use(flash())
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(express.static(path.join(__dirname, 'public')))

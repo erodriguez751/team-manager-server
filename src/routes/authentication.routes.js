@@ -1,8 +1,18 @@
-import { Router } from 'express'
-import { login} from '../controllers/authentication.controller.js'
+import express from 'express'
+import passport from 'passport'
 
-const router = Router()
+const router = express.Router();
+import { isLoggedIn } from '../lib/auth.js'
 
-router.post('/login', login)
+// SIGNUP
+router.get('/signup', (req, res) => {
+  res.render('auth/signup');
+});
+
+router.post('/signup', passport.authenticate('local.signup', {
+  successRedirect: '/members',
+  failureRedirect: '/signup',
+  failureFlash: true
+}));
 
 export default router 
