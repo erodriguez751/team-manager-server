@@ -1,4 +1,4 @@
-import {pool} from '../db.js'
+import {pool} from '../database.js'
 
 export const getTeams = async (req, res) => {
     try {

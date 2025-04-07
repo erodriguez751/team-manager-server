@@ -11,30 +11,26 @@ import teamEventMembersRoutes from './routes/team_event_members.routes.js'
 import memberPaymentsRoutes from './routes/member_payments.routes.js'
 import teamEventMemberPaymentsRoutes from './routes/team_event_member_payments.routes.js'
 import login from './routes/authentication.routes.js'
+import flash from "connect-flash";
+import expressMySQLSession from "express-mysql-session";
+import { promiseConnectFlash } from "async-connect-flash";
 import { createRequire } from "module";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import "./lib/passport.js";
+import * as helpers from "./lib/handlebars.js";
+import { SECRET, database } from "./config.js";
+import { pool } from "./database.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
 const path = require('path')
 const passport = require('passport');
-const flash = require('connect-flash')
 const session = require('express-session')
-const MySQLStore = require('express-mysql-session')(session);
 const app = express()
 
-const options = {
-	host: process.env.DB_HOST,
-	port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
-};
-
-const sessionStore = new MySQLStore(options);
+const MySQLStore = expressMySQLSession(session);
 
 app.set('views', path.join(__dirname, 'views'))
 
@@ -48,14 +44,15 @@ const exphbs = create({
 app.engine('.hbs', exphbs.engine)
 app.set('view engine', '.hbs')
 
-app.use(session({
-    secret: "team-manager-session",
-    resave: false,
-    saveUninitialized: false,
-    store: sessionStore
-}))
-
-app.use(flash())
+app.use(
+    session({
+      secret: SECRET,
+      resave: false,
+      saveUninitialized: false,
+      store: new MySQLStore({}, pool),
+    })
+  );
+app.use(promiseConnectFlash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json())

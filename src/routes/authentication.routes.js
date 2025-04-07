@@ -1,18 +1,24 @@
-import express from 'express'
-import passport from 'passport'
+import { Router } from "express";
+import {
+  renderSignUp,
+  signUp,
+  renderSignIn,
+  signIn,
+  logout,
+} from "../controllers/authentication.controller.js";
+import { validator } from "../middlewares/validator.middleware.js";
+import { signinSchema, signupSchema } from "../schemas/auth.schema.js";
 
-const router = express.Router();
-import { isLoggedIn } from '../lib/auth.js'
+const router = Router();
 
 // SIGNUP
-router.get('/signup', (req, res) => {
-  res.render('auth/signup');
-});
+router.get("/signup", renderSignUp);
+router.post("/signup", validator(signupSchema), signUp);
 
-router.post('/signup', passport.authenticate('local.signup', {
-  successRedirect: '/members',
-  failureRedirect: '/signup',
-  failureFlash: true
-}));
+// SINGIN
+router.get("/signin", renderSignIn);
+router.post("/signin", validator(signinSchema), signIn);
 
-export default router 
+router.get("/logout", logout);
+
+export default router;
